@@ -1,5 +1,5 @@
 # TextEditor
-My completely Python and tkinter based, fully featured text editor.
+My completely Python and Tkinter based, fully featured text editor.
 
 # Tkinter Text Editor
 
