@@ -26,3 +26,8 @@ A fully featured text editor built with Python and Tkinter. Designed to be simpl
 
 1. Make sure Python 3 is installed.
 
+
+## Future plans
+
+I may add word replace features in the future.
+
