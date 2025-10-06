@@ -31,7 +31,10 @@ A fully featured text editor built with Python and Tkinter. Designed to be simpl
 
 I may add word replace features in the future.
 
+## Screenshots
+
 <img width="788" height="666" alt="Text Editor Screenshot" src="https://github.com/user-attachments/assets/e3cd3796-80f3-4418-bf28-ca2409d73900" />
+
 
 <img width="1129" height="644" alt="Text Editor Screenshot 2" src="https://github.com/user-attachments/assets/31edcdd8-351f-4102-8691-970ee2c83bca" />
 
