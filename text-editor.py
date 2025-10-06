@@ -462,8 +462,8 @@ class TextEditor:
                 self.redo_stack.append(current_text)
         else:
             self.redo_stack.append(current_text)
-            self.redo_stack = list(set(self.redo_stack))
-
+            self.redo_stack = list(dict.fromkeys(self.redo_stack)) #Changed this line from set to dict.fromkeys because it preserves the lists order.
+                                                                   #Was causing undo, redo bug.
     def bind_space_backspace(self):
         if self.backspace_id is None and self.space_id is None:
             self.space_id = self.text_box.bind("<space>", self.handle_spaces, add="+")
@@ -684,3 +684,4 @@ class TextEditor:
 if __name__ == "__main__":
     text_editor = TextEditor()
     text_editor.run_editor()
+
