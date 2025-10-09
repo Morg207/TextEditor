@@ -22,8 +22,9 @@ def get_dunder_methods():
             if name.startswith('__') and name.endswith('__'):
                 attribute = getattr(typ, name, None)
                 if callable(attribute):
-                    dunders.add(name)
-    return dunders
+                    dunders.add(name) #we add dunder names to a set because we don't want a collection of duplicates. 
+    return dunders                    #Later on, this set gets searched to check if a matching token is inside it.
+                                      #Searching a set is very efficient.
 
 class FindDialogue:
     def __init__(self, text_box):
@@ -38,7 +39,7 @@ class FindDialogue:
         self.regex = ""
         self.entry_text = ""
         self.matches = []
-        self.find_index = -1
+        self.find_index = -1 #word matches are stored in a match list. This index allows me to access individual matches.
         self.cursor_index = 0
         self.word_var = tk.IntVar(value=1)
         self.wrap_var = tk.IntVar(value=1)
@@ -53,7 +54,7 @@ class FindDialogue:
         find_window.transient(self.text_box.winfo_toplevel())
         find_window.grab_set()
         find_window.focus_force()
-        find_window.protocol("WM_DELETE_WINDOW", self.close)
+        find_window.protocol("WM_DELETE_WINDOW", self.close) #Run the close method when user closes the application window. (top right)
         find_window.title("Find Dialogue")
         return find_window
 
@@ -145,11 +146,11 @@ class FindDialogue:
 
     def clamp_match_index(self, direction):
         wrap_around = self.wrap_var.get()
-        first_up_search = -2
+        first_up_search = -2 #If the user has the up direction checked and they press enter for the first time, the find_index will be -2 because it starts at -1.
         if wrap_around and self.find_index != first_up_search:
-            self.find_index %= len(self.matches)
+            self.find_index %= len(self.matches) #If the user iterates through all matches, (up or down) reset find index to prevent index out of bounds error.
         else:
-            last_match = len(self.matches)-1
+            last_match = len(self.matches)-1 #if the find index is -2 or wrap around is false, clamp the find index to 0 (Left side) or len(self.matches)-1. (Right side)
             if direction == "Up" and self.find_index < 0:
                 self.find_index = 0
             elif direction == "Down" and self.find_index > last_match:
@@ -309,7 +310,7 @@ class TextEditor:
         text_box.bind("<space>", self.save_word)
         text_box.bind("<Return>", self.save_word)
         text_box.bind("<Tab>", self.save_word)
-        text_box.bind("<Tab>", self.handle_indent, add="+")
+        text_box.bind("<Tab>", self.handle_indent, add="+") #add argument allows you to bind more than one method or function to a key event.
         text_box.bind("<Key>", lambda t=text_box: text_box.see(tk.INSERT))
         text_box.pack(fill="both", expand=True)
         editor_frame.pack(fill="both", expand=True)
@@ -330,8 +331,8 @@ class TextEditor:
     def create_edit_bindings(self):
         self.window.bind("<Control-z>", self.undo)
         self.window.bind("<Control-Z>", self.redo)
-        self.window.unbind_class("Text", "<Control-a>")
-        self.window.bind_class("Text", "<Control-a>", self.select_all)
+        self.window.unbind_class("Text", "<Control-a>") #A way around tkinters weird binding behaviour. Control a, control x and control v all have default bindings.
+        self.window.bind_class("Text", "<Control-a>", self.select_all) #This is a way to override them for my custom behaviour.
         self.window.unbind_class("Text", "<Control-x>")
         self.window.bind_class("Text", "<Control-x>", self.cut)
         self.window.unbind_class("Text", "<Control-v>")
@@ -436,9 +437,9 @@ class TextEditor:
             self.redo_stack.append(current_text)
             self.text_box.insert("1.0", last_state)
         else:
-            self.remove_duplicates(last_item,current_text)
-        self.remove_empty_strings()
-        if self.python_mode:
+            self.remove_duplicates(last_item,current_text) #Removed duplicates because sometimes the same text would be added to the document, with no apparent text change.
+        self.remove_empty_strings() #Removed empty strings because when pressing redo, empty strings were pasted into the document.
+        if self.python_mode:        #If empty strings were pasted in the document, I'd have to press the undo button multiple times to see a proper text change.
             self.highlight_text()
 
     def redo(self,event=None):
@@ -571,7 +572,7 @@ class TextEditor:
             self.recent_files.remove(file_path)
         if file_path is not None:
             self.recent_files.insert(0, file_path)
-        self.recent_files = self.recent_files[:5]
+        self.recent_files = self.recent_files[:5] #Limit the recent files list to five entries.
         self.recent_files_menu.delete(0, tk.END)
         for recent_file in self.recent_files:
             self.recent_files_menu.add_command(label=recent_file,command=lambda
@@ -684,4 +685,5 @@ class TextEditor:
 if __name__ == "__main__":
     text_editor = TextEditor()
     text_editor.run_editor()
+
 
