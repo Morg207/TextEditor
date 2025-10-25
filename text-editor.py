@@ -39,6 +39,7 @@ class FindDialogue:
         self.regex = ""
         self.entry_text = ""
         self.matches = []
+        self.clicked_next = False
         self.find_index = -1
         self.cursor_index = 0
         self.word_var = tk.IntVar(value=1)
@@ -137,6 +138,7 @@ class FindDialogue:
 
     def highlight_match(self):
         if not self.match_all_var.get():
+            self.clicked_next = True
             direction = self.direction_var.get()
             if direction == "Up":
                 self.find_index -= 1
@@ -210,10 +212,7 @@ class ReplaceDialogue(FindDialogue):
             messagebox.showerror("Whitespace error", "Error: cannot replace whitespace. Try again...")
             return
         if self.matches:
-            if not self.match_all_var.get():
-                self.replace_single_match(user_input)
-            else:
-                self.replace_all_matches(user_input)
+            self.replace_matches(user_input)
         else:
             self.text_box.bell()
 
@@ -230,6 +229,7 @@ class ReplaceDialogue(FindDialogue):
         end_col -= (len(current_match.group()) - len(user_input))
         end_index = f"{end_row}.{end_col}"
         self.cursor_index = end_index
+        self.clicked_next = False
 
     def replace_all_matches(self, user_input):
         for match in reversed(self.matches):
@@ -239,6 +239,15 @@ class ReplaceDialogue(FindDialogue):
             self.text_box.insert(start_index, user_input)
         self.matches = self.find_matches()
         self.find_index = -1
+
+    def replace_matches(self, user_input):
+        if not self.match_all_var.get():
+            if not self.clicked_next:
+                self.text_box.bell()
+                return
+            self.replace_single_match(user_input)
+        else:
+            self.replace_all_matches(user_input)
 
 class TextEditor:
 
@@ -792,3 +801,4 @@ class TextEditor:
 if __name__ == "__main__":
     text_editor = TextEditor()
     text_editor.run_editor()
+
