@@ -202,7 +202,7 @@ class ReplaceDialogue(FindDialogue):
 
     def replace(self, event=None):
         user_input = self.replace_input.get()
-        is_space = any(c.isspace() for c in user_input)
+        is_space = any(char.isspace() for char in user_input)
         if user_input == "":
             messagebox.showerror("Empty replace error", "Error: must input valid text. Try again...")
             return
@@ -764,3 +764,4 @@ class TextEditor:
 if __name__ == "__main__":
     text_editor = TextEditor()
     text_editor.run_editor()
+
