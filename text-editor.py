@@ -238,7 +238,7 @@ class ReplaceDialogue(FindDialogue):
             self.text_box.delete(start_index, end_index)
             self.text_box.insert(start_index, user_input)
         self.matches = self.find_matches()
-        self.find_index = 0
+        self.find_index = -1
 
 class TextEditor:
 
@@ -764,4 +764,5 @@ class TextEditor:
 if __name__ == "__main__":
     text_editor = TextEditor()
     text_editor.run_editor()
+
 
