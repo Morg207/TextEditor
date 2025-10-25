@@ -29,7 +29,9 @@ A fully featured text editor built with Python and Tkinter. Designed to be simpl
 
 ## Future plans
 
-I may add word replace features in the future.
+Word replace features have been added. 
+Font size and font family can now be adjusted.
+No further plans as of yet.
 
 ## Screenshots
 
