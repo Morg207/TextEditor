@@ -19,8 +19,10 @@ A fully featured text editor built with Python and Tkinter. Designed to be simpl
 - Real-time line and column tracking.
 - Word wrap toggle to control text flow.
 - Find words feature for quick search.
+- Replace single word match or all word matches.
 - Python mode (with syntax highlighting) and plain text mode.
 - Basic editing actions: Select All, Cut, Copy, Paste.
+- Font size and font family adjustments.
 
 ## Installation
 
