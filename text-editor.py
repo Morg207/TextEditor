@@ -10,6 +10,8 @@ import tokenize
 import io
 import builtins
 import re
+import sys
+import subprocess
 
 def get_dunder_methods():
     types_to_check = [
@@ -277,14 +279,18 @@ class TextEditor:
         self.backspace_id: Optional[str] = None
         self.space_id: Optional[str] = None
         self.key_release_id: Optional[str] = None
-        self.window = tk.Tk()
-        self.window.title(self.file_name)
-        self.window.protocol("WM_DELETE_WINDOW", self.close)
+        self.window = self.setup_window()
         self.create_menu_bar()
         self.create_window_bindings()
         self.text_box = self.create_text_area()
         self.configure_tags(TextEditor.LIGHT_THEME_COLOURS)
-        self.text_row_label, self.text_col_label = self.create_line_positions()
+        self.status_label, self.text_row_label, self.text_col_label = self.create_status_info()
+
+    def setup_window(self):
+        window = tk.Tk()
+        window.title(self.file_name)
+        window.protocol("WM_DELETE_WINDOW", self.close)
+        return window
 
     def create_menu_bar(self):
         menu_bar = tk.Menu(self.window)
@@ -300,7 +306,7 @@ class TextEditor:
 
     def create_file_menu(self,menu_bar):
         file_menu = tk.Menu(menu_bar, tearoff=0)
-        file_menu.add_command(label="New File", accelerator="Ctrl+N", command=self.new_file)
+        file_menu.add_command(label="New File", accelerator="Ctrl+N", command=TextEditor.new_file)
         file_menu.add_command(label="Open", accelerator="Ctrl+O", command=self.open)
         self.recent_files_menu = tk.Menu(file_menu, tearoff=0)
         file_menu.add_cascade(label="Recent Files", menu=self.recent_files_menu)
@@ -435,7 +441,7 @@ class TextEditor:
         self.create_options_bindings()
 
     def create_file_bindings(self):
-        self.window.bind("<Control-n>", self.new_file)
+        self.window.bind("<Control-n>", TextEditor.new_file)
         self.window.bind("<Control-o>", self.open)
         self.window.bind("<Control-s>", self.save)
         self.window.bind("<Control-S>", self.save_as)
@@ -462,14 +468,16 @@ class TextEditor:
         self.window.bind("<Alt-m>", self.enable_python_mode)
         self.window.bind("<Alt-c>", self.enable_text_mode)
 
-    def create_line_positions(self):
-        line_frame = ttk.Frame(self.window)
-        text_row_label = ttk.Label(line_frame, text="Ln: 0", padding=(0, 0, 8, 0))
-        text_col_label = ttk.Label(line_frame, text="Col: 0", padding=(0, 0, 5, 0))
+    def create_status_info(self):
+        status_frame = ttk.Frame(self.window)
+        status_label = ttk.Label(status_frame, text="")
+        text_row_label = ttk.Label(status_frame, text="Ln: 0", padding=(0, 0, 8, 0))
+        text_col_label = ttk.Label(status_frame, text="Col: 0", padding=(0, 0, 5, 0))
         text_col_label.pack(side="right")
         text_row_label.pack(side="right")
-        line_frame.pack(fill="x")
-        return text_row_label, text_col_label
+        status_label.pack(side="left",padx=(5,0), pady=(2,2))
+        status_frame.pack(fill="x")
+        return status_label, text_row_label, text_col_label
 
     def run_editor(self):
         self.window.mainloop()
@@ -510,12 +518,12 @@ class TextEditor:
             self.text_box.edit_modified(False)
             self.window.title("*" + self.file_name + "*")
 
-    def new_file(self,event=None):
-        self.text_box.delete("1.0", tk.END)
-        self.file_name = "untitled"
-        self.window.title(self.file_name)
-        self.text_box.edit_modified(False)
-        self.unbind_space_backspace()
+    @staticmethod
+    def new_file(event=None):
+        if getattr(sys, 'frozen', False):
+            subprocess.Popen([sys.executable])
+        else:
+            subprocess.Popen([sys.executable, __file__])
 
     def cut(self, event=None):
         try:
@@ -638,6 +646,8 @@ class TextEditor:
                 file.write(self.text_box.get("1.0", "end-1c"))
                 self.text_box.edit_modified(False)
                 self.window.title(self.file_name)
+            self.status_label.config(text="File has been saved.")
+            self.window.after(7000, lambda: self.status_label.config(text=""))
             return True
         else:
             saved = self.save_as()
@@ -653,6 +663,8 @@ class TextEditor:
             with open(self.current_file_path, "w") as file:
                 file.write(self.text_box.get("1.0", "end-1c"))
                 self.text_box.edit_modified(False)
+            self.status_label.config(text="File has been saved.")
+            self.window.after(7000, lambda: self.status_label.config(text=""))
             return True
         else:
             return False
@@ -801,4 +813,3 @@ class TextEditor:
 if __name__ == "__main__":
     text_editor = TextEditor()
     text_editor.run_editor()
-
